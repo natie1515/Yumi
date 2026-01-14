@@ -106,7 +106,7 @@ cd && cd YukiBot-MD && rm -rf sessions/Principal && npm run code
 **Comandos para actualizar YukiBot-MD de forma automática**
 
 ```bash
-grep -q 'bash\|wget' <(dpkg -l) || apt install -y bash wget && wget -O - https://raw.githubusercontent.com/DevZyxlJs/YukiBot-MD/master/termux.sh | bash 
+grep -q 'bash\|wget' <(dpkg -l) || apt install -y bash wget && wget -O - https://raw.githubusercontent.com/The-King-Destroy/YukiBot-MD/master/termux.sh | bash 
 ```
 **✰ Volverte owner del Bot**
 
