@@ -165,11 +165,5 @@ href="https://home.akirax.net"><img src="https://o.uguu.se/mfnuwWzC.jpeg" height
 [![Carlos](https://github.com/AzamiJs.png?size=120)](https://github.com/AzamiJs)
 [![ZyxlJs](https://github.com/DevZyxlJs.png?size=120)](https://zyxljs.stellarwa.xyz)
 
-<div align="center">
-
 ### **`ᥫ᭡ Propietario`**
-<a href="https://github.com/The-King-Destroy">
-  <img src="https://github.com/The-King-Destroy.png" width="200" height="200" alt="ⁱᵃᵐ|𝔇ĕ𝐬†𝓻⊙γ𒆜"/>
-</a>
-
-</div>
+[![Destroy](https://github.com/The-King-Destroy.png?size=120)](https://github.com/The-King-Destroy)
