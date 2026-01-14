@@ -162,7 +162,7 @@ href="https://home.akirax.net"><img src="https://o.uguu.se/mfnuwWzC.jpeg" height
 </a>
 
 ### **`ꕥ Agradecimientos`**
-[![Carlos](https://github.com/AzamiJs.png?size=100)](https://github.com/AzamiJs)
+[![Carlos](https://github.com/AzamiJs.png?size=120)](https://github.com/AzamiJs)
 [![ZyxlJs](https://github.com/DevZyxlJs.png?size=120)](https://zyxljs.stellarwa.xyz)
 
 ### **`ᥫ᭡ Propietario`**
