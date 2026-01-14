@@ -11,6 +11,9 @@ export default async (client, m) => {
       const botId = client.user.id.split(':')[0] + '@s.whatsapp.net'
       const primaryBotId = chat?.primaryBot
       const memberCount = metadata.participants.length      
+      const isSelf = global.db.data.settings[botId]?.self ?? false
+      if (isSelf) return
+
       for (const p of anu.participants) {
         const jid = p.phoneNumber
         const phone = p.phoneNumber?.split('@')[0] || jid.split('@')[0]
