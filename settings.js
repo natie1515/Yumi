@@ -1,20 +1,20 @@
 import fs from 'fs';
 
-global.owner = ['573196588149', '5492916450307', '5216671548329', '573247662531']
+global.owner = ['559296077349', '5492916450307', '5216671548329', '573247662531']
 global.botNumber = ''
 
 global.sessionName = 'Sessions/Owner'
 global.version = '^2.0 - Latest'
-global.dev = "© ⍴᥆ᥕᥱrᥱძ ᑲᥡ ⁱᵃᵐ|𝔇ĕ𝐬†𝓻⊙γ𒆜"
+global.dev = "© mᥲძᥱ ᥕі𝗍һ ᑲᥡ 𓆩‌۫᷼ ִֶָღ݉͢𝓢𝓪𝓻𝓪𝓱𓆪‌"
 global.links = {
 api: 'https://api.stellarwa.xyz',
-channel: "https://whatsapp.com/channel/0029Vb64nWqLo4hb8cuxe23n",
-github: "https://github.com/The-King-Destroy/YukiBot-MD",
-gmail: "thekingdestroy507@gmail.com"
+channel: "https://whatsapp.com/channel/0029VaCDajZ9WtBvBZy76k2h",
+github: "https://github.com",
+gmail: "danivelasco745@gmail.com"
 }
 global.my = {
-ch: '120363401404146384@newsletter',
-name: 'ೃ࿔ ყµҡเ ωαɓσƭร - σƒƒเ૮เαℓ ૮ɦαɳɳεℓ .ೃ࿐',
+ch: '120363188537623366@newsletter',
+name: '..૭ 𝐘𝐮𝐦𝐢𝐁𝐨𝐭 - 𝐀𝐈 ৴৴ 𝐎𝐟𝐟𝐢𝐜𝐢𝐚𝐥 𝐂𝐡𝐚𝐧𝐧𝐞𝐥 ⌕',
 }
 
 global.mess = {
