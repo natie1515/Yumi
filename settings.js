@@ -32,5 +32,6 @@ ootaizumi: { url: "https://api.ootaizumi.web.id", key: null },
 stellar: { url: "https://api.stellarwa.xyz", key: "Destroy" },
 apifaa: { url: "https://api-faa.my.id", key: null },
 xyro: { url: "https://api.xyro.site", key: null },
-yupra: { url: "https://api.yupra.my.id", key: null }
+yupra: { url: "https://api.yupra.my.id", key: null },
+adonix: { url: "https://api-adonix.ultraplus.click", key: "Destroy" },
 }
