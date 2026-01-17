@@ -1,5 +1,6 @@
 import "./settings.js"
 import main from './main.js'
+import web from './lib/system/web.js'
 import events from './commands/events.js'
 import { Browsers, makeWASocket, makeCacheableSignalKeyStore, useMultiFileAuthState, fetchLatestBaileysVersion, jidDecode, DisconnectReason, jidNormalizedUser, } from "@whiskeysockets/baileys";
 import cfonts from 'cfonts';
@@ -200,6 +201,7 @@ async function startBot() {
     }
     if (connection == "open") {
          const userJid = jidNormalizedUser(client.user.id)
+         web(client)
          const userName = client.user.name || "Desconocido"
          console.log(chalk.green.bold(`[ ✿ ]  Conectado a: ${userName}`))
     }
