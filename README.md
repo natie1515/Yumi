@@ -7,6 +7,47 @@
 Este proyecto **no está afiliado de ninguna manera** con `WhatsApp`, `Inc. WhatsApp` es una marca registrada de `WhatsApp LLC`, y este bot es un **desarrollo independiente** que **no tiene ninguna relación oficial con la compañía**.
 
 <details>
+<summary><strong>🌵 Configuración de acceso al subbot</strong> — Web</summary>
+
+### 1. Desde Termux (local)
+Web:
+```
+localhost:5010
+```
+
+### 2. Desde un servidor hosting (externo)
+```
+IP_DEL_SERVIDOR:PUERTO
+```
+Ejemplo:
+```
+1.00.00.00:5010
+```
+
+### 3. Ajustar el puerto en el código
+Ir a:
+
+[lib/system/web.js](https://github.com/The-King-Destroy/YukiBot-MD/blob/main/lib%2Fsystem%2Fweb.js)
+
+Linea :: #34
+
+Buscar la línea donde se define el `PORT` y ajustarla al puerto de tu servidor:
+
+```js
+const PORT = process.env.PORT || 5010;
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en el puerto ${PORT}`);
+});
+```
+
+Si tu hosting usa otro puerto (ej. `8080`):
+```js
+const PORT = process.env.PORT || 8080;
+```
+
+</details>
+
+<details>
 <summary><b> ➮ Descripción</b></summary>
 
 Yuki Bot es un bot de WhatsApp multifuncional basado en `baileys`. Este bot ofrece una variedad de características para mejorar tu experiencia en WhatsApp.
