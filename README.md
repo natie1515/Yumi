@@ -204,14 +204,13 @@ href="https://home.akirax.net"><img src="https://o.uguu.se/mfnuwWzC.jpeg" height
 
 ---
 
-### ❀ Colaboradores
-<a href="https://github.com/The-King-Destroy/YukiBot-MD/graphs/contributors">
+### 🦋 Colaboradores
+<a href="https://api.stellarwa.xyz">
   <img src="https://contrib.rocks/image?repo=The-King-Destroy/YukiBot-MD" />
 </a>
 
-### **`ꕥ Agradecimientos`**
-[![Carlos](https://github.com/AzamiJs.png?size=120)](https://github.com/AzamiJs)
-[![ZyxlJs](https://github.com/DevZyxlJs.png?size=120)](https://zyxljs.stellarwa.xyz)
+### 🌼 Agradecimientos
+[![ZyxlJs](https://github.com/DevZyxlJs.png?size=100)](https://github.com/DevZyxlJs) [![Carlos](https://github.com/AzamiJs.png?size=100)](https://github.com/AzamiJs)
 
-### **`ᥫ᭡ Propietario`**
-[![Destroy](https://github.com/The-King-Destroy.png?size=120)](https://github.com/The-King-Destroy)
+### 💐 Propietario
+[![King](https://github.com/The-King-Destroy.png?size=120)](https://github.com/The-King-Destroy) 
