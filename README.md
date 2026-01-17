@@ -216,7 +216,7 @@ cd && cd YukiBot-MD && rm -rf Sessions/Owner && npm start
 
 <div align="center">
   <a href="https://home.akirax.net">
-    <img src="" alt="Logo" height="125px">
+    <img src="https://cdn2.sockywa.xyz/JG8PX.jpeg" alt="Logo" height="125px">
   </a>
 </div>
 
