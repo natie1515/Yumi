@@ -1,7 +1,14 @@
-<h1 align="center">✦ Yυƙι Sυσυ ✦</h1>
+> [!IMPORTANT]
+> **Este proyecto está en constante evolución. Estamos comprometidos en ofrecer a nuestra comunidad un Bot increíble. Te invitamos a instalarlo y para estar al tanto de todas las novedades. [¡Únete a nuestro nuevo canal!](https://whatsapp.com/channel/0029Vb64nWqLo4hb8cuxe23n)**
 
-<img src= "https://files.catbox.moe/om9jai.jpg">
+<p align="center"> 
+<img src="https://cdn.sockywa.xyz/files/JmRs.jpeg" alt="YukiBot-MD" style="width: 75%; height: auto; max-width: 100px;">
+
+<p align="center"> 
+<a href="#"><img title="YukiBot-MD" src="https://img.shields.io/badge/¡Disfruta de un Bot totalmente gratuito, con múltiples funciones y de código abierto! -purple?colorA=%239b33b0&colorB=%231c007b&style=for-the-badge"></a> 
 </p>
+
+---
 
 ### *`❕️ Información importante`*
 Este proyecto **no está afiliado de ninguna manera** con `WhatsApp`, `Inc. WhatsApp` es una marca registrada de `WhatsApp LLC`, y este bot es un **desarrollo independiente** que **no tiene ninguna relación oficial con la compañía**.
