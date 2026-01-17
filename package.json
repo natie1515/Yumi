@@ -28,6 +28,7 @@
     "aptoide-scraper": "github:DIEGO-OFC/dv-aptoide-scraper",
     "axios": "^0.24.0",
     "cfonts": "latest",
+    "cors": "^2.8.5",
     "chalk": "^4.1.2",
     "cheerio": "npm:cheerio@1.0.0-rc.12",
     "express": "^4.19.2",
