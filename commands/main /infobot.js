@@ -56,7 +56,7 @@ export default {
 ✿ *Nombre Corto ›* ${namebot}
 ✿ *Nombre Largo ›* ${botname}
 ✦ *Moneda ›* ${monedas}
-✦ *Prefijo${Array.isArray(prefijo) && prefijo.length > 1 ? 's' : ''} ›* ${(Array.isArray(prefijo) ? prefijo : [prefijo || '/']).map(p => `\`${p}\``).join(', ')}
+✦ *Prefijo${Array.isArray(prefijo) && prefijo.length > 1 ? 's' : ''} ›* ${prefijo === true ? '`sin prefijos`' : (Array.isArray(prefijo) ? prefijo : [prefijo || '/']).map(p => `\`${p}\``).join(', ')}
 
 ❒ *Tipo ›* ${botType}
 ❒ *Plataforma ›* ${platform}
