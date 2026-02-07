@@ -91,12 +91,14 @@ const isAdmins = m.isGroup ? groupAdmins.some(p => p.phoneNumber === sender || p
 
 const chatData = global.db.data.chats[from]
 
-/* ===== FIX BOT PRIMARIO ===== */
-const botprimaryId = chat?.primaryBot
+// ===== FILTRO BOT PRIMARIO CORREGIDO =====
+const chatData = global.db.data.chats[m.chat]
+const botprimaryId = chatData?.primaryBot
+
 if (m.isGroup && botprimaryId && botprimaryId !== botJid) {
-  return
+return
 }
-/* ===== FIN FIX ===== */
+// ===== FIN FILTRO =====
 
 const consolePrimary = chatData.primaryBot
 if (!consolePrimary || consolePrimary === client.user.id.split(':')[0] + '@s.whatsapp.net') {
