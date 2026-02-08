@@ -28,31 +28,40 @@ export default {
     if (!validColors.includes(color)) return m.reply(`《✧》 Elige: red, black o green.`)
     if (user.coins < amount) return m.reply(`《✧》 No tienes suficientes ${currency}.`)
 
-    // --- SISTEMA DE "CASA GANA" (10% DE PROBABILIDAD) ---
+    // --- LÓGICA DE PROBABILIDAD REALISTA PERO DIFÍCIL ---
     const suerte = Math.random() * 100
     let resultColor
 
     if (suerte < 10) { 
-      // El usuario entra en el 10% de probabilidad de ganar
+      // 10% de probabilidad de ganar (Precio Justo)
       resultColor = color 
-    } else if (suerte < 11) {
-      // 1% de probabilidad de que caiga Verde (si no lo eligió, pierde)
-      resultColor = 'green'
     } else {
-      // 89% de probabilidad de que salga un color distinto al que eligió
-      const perdidas = validColors.filter(c => c !== color)
-      resultColor = perdidas[Math.floor(Math.random() * perdidas.length)]
+      // 90% de probabilidad de perder, pero variando el color de caída
+      // Para que no parezca que siempre cae en el mismo color
+      const coloresParaPerder = validColors.filter(c => c !== color)
+      resultColor = coloresParaPerder[Math.floor(Math.random() * coloresParaPerder.length)]
     }
     // ----------------------------------------------------
 
     if (resultColor === color) {
-      const multiplier = resultColor === 'green' ? 14 : 2
-      const reward = amount * multiplier
-      user.coins += (reward - amount)
-      await client.sendMessage(chatId, { text: `「✿」 La ruleta cayó en *${resultColor.toUpperCase()}*. ¡Ganaste *${reward.toLocaleString()}* ${currency}! 🎰` }, { quoted: m })
+      // PAGOS REDUCIDOS (Justos para la economía)
+      // Rojo/Negro pagan x1.5 (Ganas la mitad de lo que apostaste extra)
+      // Verde paga x5 (Ya no x14)
+      const multiplier = resultColor === 'green' ? 5 : 1.5
+      const reward = Math.floor(amount * multiplier)
+      const gananciaNeta = reward - amount
+      
+      user.coins += gananciaNeta
+      await client.sendMessage(chatId, { 
+        text: `「✿」 La ruleta giró y cayó en... *${resultColor.toUpperCase()}*! 🎰\n\n» ¡Ganaste un premio justo!\n» Recibes: *+${gananciaNeta.toLocaleString()} ${currency}*\n» Total: *${user.coins.toLocaleString()}*`, 
+        mentions: [senderId] 
+      }, { quoted: m })
     } else {
       user.coins -= amount
-      await client.sendMessage(chatId, { text: `「✿」 La ruleta cayó en *${resultColor.toUpperCase()}*. Perdiste *${amount.toLocaleString()}* ${currency}. 💀` }, { quoted: m })
+      await client.sendMessage(chatId, { 
+        text: `「✿」 La ruleta cayó en *${resultColor.toUpperCase()}*. Perdiste *${amount.toLocaleString()}* ${currency}. 💀\n\nNo te rindas, ¡vuelve a girar!`, 
+        mentions: [senderId] 
+      }, { quoted: m })
     }
   },
 }
