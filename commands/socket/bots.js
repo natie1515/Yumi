@@ -10,7 +10,6 @@ export default {
   category: 'socket',
   run: async (client, m) => {
     const botId = client.user.id.split(':')[0] + '@s.whatsapp.net'
-    const bot = global.db.data.settings[botId]
     const from = m.key.remoteJid
     const groupMetadata = m.isGroup ? await client.groupMetadata(from).catch(() => {}) : ''
     const groupParticipants = groupMetadata?.participants?.map((p) => p.phoneNumber || p.jid || p.lid || p.id) || []
@@ -27,26 +26,27 @@ export default {
         }).map((id) => id.replace(/\D/g, ''))
     }
 
-    // --- AHORA BUSCAMOS EN AMBAS CARPETAS ---
+    // --- LECTURA DE LAS 3 CARPETAS ---
     const subs = getBotsFromFolder('Subs')
-    const ownersExtra = getBotsFromFolder('Owner') // <--- NUEVO: Lee la carpeta Owner
+    const ownersExtra = getBotsFromFolder('Owner')
+    const premiums = getBotsFromFolder('Premium') // <--- CARPETA PREMIUM
 
-    const categorizedBots = { Owner: [], Sub: [] }
+    const categorizedBots = { Owner: [], Premium: [], Sub: [] }
     const mentionedJid = []
 
-    const formatBot = (number, label) => {
+    const formatBot = (number, label, emoji) => {
       const jid = number + '@s.whatsapp.net'
       if (!groupParticipants.includes(jid)) return null
       mentionedJid.push(jid)
       const data = global.db.data.settings[jid]
       const name = data?.namebot || 'Bot'
       const handle = `@${number}`
-      return `- [${label} *${name}*] › ${handle}`
+      return `- [${emoji} *${name}*] › ${handle}`
     }
 
-    // 1. Bot Principal (El que corre el script)
+    // 1. Bot Principal (Owner)
     if (global.db.data.settings[mainBotJid]) {
-      const name = global.db.data.settings[mainBotJid].namebot
+      const name = global.db.data.settings[mainBotJid].namebot || 'Principal'
       const handle = `@${mainBotJid.split('@')[0]}`
       if (groupParticipants.includes(mainBotJid)) {
         mentionedJid.push(mainBotJid)
@@ -54,32 +54,40 @@ export default {
       }
     }
 
-    // 2. Otros Owners (Bots Premium en carpeta /Owner)
+    // 2. Otros Owners
     ownersExtra.forEach((num) => {
-      if (num + '@s.whatsapp.net' === mainBotJid) return // No repetir el principal
-      const line = formatBot(num, 'Owner')
+      if (num + '@s.whatsapp.net' === mainBotJid) return
+      const line = formatBot(num, 'Owner', 'Owner')
       if (line) categorizedBots.Owner.push(line)
     })
 
-    // 3. Subs (Bots en carpeta /Subs)
+    // 3. Premiums (NUEVO)
+    premiums.forEach((num) => {
+      const line = formatBot(num, 'Premium', 'Premium')
+      if (line) categorizedBots.Premium.push(line)
+    })
+
+    // 4. Subs
     subs.forEach((num) => {
-      const line = formatBot(num, 'Sub')
+      const line = formatBot(num, 'Sub', 'Sub')
       if (line) categorizedBots.Sub.push(line)
     })
 
     // --- CONTEO TOTAL ---
-    // Sumamos 1 (principal) + los que haya en la carpeta Owner
     const totalOwners = 1 + ownersExtra.filter(num => num + '@s.whatsapp.net' !== mainBotJid).length
+    const totalPremiums = premiums.length
     const totalSubs = subs.length
-    const totalBots = totalOwners + totalSubs
-    const totalInGroup = categorizedBots.Owner.length + categorizedBots.Sub.length
+    const totalBots = totalOwners + totalPremiums + totalSubs
+    const totalInGroup = categorizedBots.Owner.length + categorizedBots.Premium.length + categorizedBots.Sub.length
 
     let message = `ꕥ Números de Sockets activos *(${totalBots})*\n\n`
-    message += `❖ Principales › *${totalOwners}*\n` // <--- Ahora mostrará más de 1 si hay bots en /Owner
+    message += `❖ Principales › *${totalOwners}*\n`
+    message += `💎 Premium › *${totalPremiums}*\n` // <--- Nueva fila Premium
     message += `✿ Subs › *${totalSubs}*\n\n`
     message += `➭ *Bots en el grupo ›* ${totalInGroup}\n`
 
-    for (const category of ['Owner', 'Sub']) {
+    // Mostrar las listas por categoría
+    for (const category of ['Owner', 'Premium', 'Sub']) {
       if (categorizedBots[category].length) {
         message += categorizedBots[category].join('\n') + '\n'
       }
