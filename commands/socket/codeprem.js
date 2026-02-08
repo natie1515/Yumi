@@ -5,13 +5,9 @@ export default {
   category: 'owner',
   isOwner: true,
   run: async (client, m, args) => {
-    // Generamos un token único de 8 caracteres
     const token = crypto.randomBytes(4).toString('hex').toUpperCase()
-    
-    // Inicializamos la base de datos si no existe
     if (!global.db.data.mainTokens) global.db.data.mainTokens = []
     
-    // Guardamos el token con su estado disponible
     global.db.data.mainTokens.push({
       token: token,
       status: 'available',
@@ -19,11 +15,6 @@ export default {
       date: new Date().toISOString()
     })
 
-    const texto = `*《 ✧ TOKEN BOT PRINCIPAL ✧ 》*\n\n` +
-                  `> 🔑 Código: \`${token}\`\n` +
-                  `> ⚠️ Al canjearlo, la sesión se guardará en **/Owner**.\n\n` +
-                  `*Modo de uso:* \`.beowner ${token}\``
-    
-    await m.reply(texto)
+    await m.reply(`*《 ✧ TOKEN BOT PRINCIPAL ✧ 》*\n\n> 🔑 Código: \`${token}\`\n> ⚠️ Al usarlo, serás registrado como **Principal** en la carpeta /Owner.\n\n*Uso:* \`.beowner ${token}\``)
   }
 }
