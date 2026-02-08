@@ -7,7 +7,7 @@ const isYTUrl = (url) => /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/i
 export default {
   command: ['play2', 'mp4', 'ytmp4', 'ytvideo', 'playvideo'],
   category: 'downloader',
-  run: async (client, m, args, usedPrefix, command) => {
+  run: async (client, m, args) => {
     try {
       if (!args[0]) {
         return m.reply('《✧》Por favor, menciona el nombre o URL del video que deseas descargar')
@@ -26,14 +26,16 @@ export default {
             thumbBuffer = await getBuffer(videoInfo.image)
             const vistas = (videoInfo.views || 0).toLocaleString()
             const canal = videoInfo.author?.name || 'Desconocido'
-            const infoMessage = `➩ Descargando › *${title}*
+        const caption = `➥ Descargando › ${title}
 
-> ❖ Canal › *${canal}*
-> ⴵ Duración › *${videoInfo.timestamp || 'Desconocido'}*
-> ❀ Vistas › *${vistas}*
-> ✩ Publicado › *${videoInfo.ago || 'Desconocido'}*
-> ❒ Enlace › *${url}*`
-            await client.sendMessage(m.chat, { image: thumbBuffer, caption: infoMessage }, { quoted: m })
+> ✿⃘࣪◌ ֪ Canal › ${canal}
+> ✿⃘࣪◌ ֪ Duración › ${videoInfo.timestamp || 'Desconocido'}
+> ✿⃘࣪◌ ֪ Vistas › ${vistas}
+> ✿⃘࣪◌ ֪ Publicado › ${videoInfo.ago || 'Desconocido'}
+> ✿⃘࣪◌ ֪ Enlace › ${url}
+
+𐙚 ❀ ｡ ↻ El archivo se está enviando, espera un momento... ˙𐙚`
+            await client.sendMessage(m.chat, { image: thumbBuffer, caption }, { quoted: m })
           }
         }
       } catch (err) {
@@ -43,21 +45,23 @@ export default {
         return m.reply('《✧》 No se pudo descargar el *video*, intenta más tarde.')
       }
       const videoBuffer = await getBuffer(video.url)
-      await client.sendMessage(m.chat, { video: videoBuffer, fileName: `${title || 'video'}.mp4`, mimetype: 'video/mp4' }, { quoted: m })
+      let mensaje
+
+        mensaje = { video: videoBuffer, fileName: `${title || 'video'}.mp4`, mimetype: 'video/mp4' }
+
+      await client.sendMessage(m.chat, mensaje, { quoted: m })
     } catch (e) {
-      await m.reply(`> An unexpected error occurred while executing command *${usedPrefix + command}*. Please try again or contact support if the issue persists.\n> [Error: *${e.message}*]`)
+      await m.reply(msgglobal)
     }
   }
 }
 
 async function getVideoFromApis(url) {
   const apis = [
-    { api: 'Adonix', endpoint: `${global.APIs.adonix.url}/download/ytvideo?apikey=${global.APIs.adonix.key}&url=${encodeURIComponent(url)}`, extractor: res => res?.data?.url },    
-    { api: 'Vreden', endpoint: `${global.APIs.vreden.url}/api/v1/download/youtube/video?url=${encodeURIComponent(url)}&quality=360`, extractor: res => res.result?.download?.url },
-    { api: 'Stellar v2', endpoint: `${global.APIs.stellar.url}/dl/ytmp4v2?url=${encodeURIComponent(url)}&key=${global.APIs.stellar.key}`, extractor: res => res.vidinfo?.url },
-    { api: 'Stellar', endpoint: `${global.APIs.stellar.url}/dl/ytmp4?url=${encodeURIComponent(url)}&quality=360&key=${global.APIs.stellar.key}`, extractor: res => res.data?.dl },
-    { api: 'Nekolabs', endpoint: `${global.APIs.nekolabs.url}/downloader/youtube/v1?url=${encodeURIComponent(url)}&format=360`, extractor: res => res.result?.downloadUrl },
-    { api: 'Vreden v2', endpoint: `${global.APIs.vreden.url}/api/v1/download/play/video?query=${encodeURIComponent(url)}`, extractor: res => res.result?.download?.url }
+    { api: 'Adonix', endpoint: `${global.APIs.adonix.url}/download/ytvideo?apikey=${global.APIs.adonix.key}&url=${encodeURIComponent(url)}`, extractor: res => res?.data?.url },
+    { api: 'Nexevo', endpoint: `https://nexevo-api.vercel.app/download/y2?url=${encodeURIComponent(url)}`, extractor: res => res.result?.url },
+    { api: 'Sylphy', endpoint: `${global.APIs.sylphy.url}/download/ytmp4?url=${encodeURIComponent(url)}&q=360p&api_key=${global.APIs.sylphy.key}`, extractor: res => res.result?.url }, 
+    { api: 'Stellar', endpoint: `${global.api.url}/dl/ytmp4?url=${encodeURIComponent(url)}&quality=144&key=${global.api.key}`, extractor: res => res.data?.dl }
   ]
 
   for (const { api, endpoint, extractor } of apis) {
