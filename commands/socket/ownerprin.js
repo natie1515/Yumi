@@ -10,51 +10,51 @@ export default {
   command: ['beowner', 'claimowner'],
   category: 'owner',
   run: async (client, m, args, usedPrefix, command) => {
-    // Verificamos si incluyó el código
     const tokenInput = args[0]?.toUpperCase()
-    if (!tokenInput) {
-      return m.reply(`《✧》 Debes usar este comando con el código generado.\n\n*Ejemplo:* \`${usedPrefix + command} ABC1234\``)
-    }
+    if (!tokenInput) return m.reply(`《✧》 Ingresa el código premium para ser **Bot Principal**.`)
 
-    // Buscamos el token en la base de datos
     const tokens = global.db.data.mainTokens || []
     const tokenIndex = tokens.findIndex(t => t.token === tokenInput && t.status === 'available')
 
-    if (tokenIndex === -1) {
-      return m.reply('《✧》 El código es inválido, ya fue usado o no existe.')
-    }
+    if (tokenIndex === -1) return m.reply('《✧》 Código inválido o ya utilizado.')
 
-    // Definimos la ruta hacia la carpeta /Owner
+    // 1. RUTA HACIA LA CARPETA OWNER (Visto en tu File Manager)
     const ownerPath = path.join(dirname, '../../Sessions/Owner') 
     if (!fs.existsSync(ownerPath)) fs.mkdirSync(ownerPath, { recursive: true })
 
-    const rtx = '`✤` Iniciando vinculación de **BOT PRINCIPAL**...\n\n> La sesión se guardará en la carpeta principal de Owners.'
+    // 2. INYECCIÓN DE RANGO: Esto es lo que evita que salga como "Sub"
+    const phone = m.sender.split('@')[0]
     
-    // Configuramos los flags para que startSubBot use la ruta de Owner
+    // Lo agregamos a la lista de owners global para que el sistema lo cuente como Principal
+    if (!global.owner.some(o => o[0] === phone)) {
+      global.owner.push([phone, 'Bot Principal Premium', true])
+    }
+    
+    // También lo guardamos en la DB para que persista tras reiniciar
+    if (!global.db.data.config) global.db.data.config = { owners: [] }
+    if (!global.db.data.config.owners.includes(m.sender)) {
+      global.db.data.config.owners.push(m.sender)
+    }
+
+    const rtx = '`✤` Vinculando como **BOT PRINCIPAL**...\n\n> Registrando en lista de Owners y carpeta principal.'
+    
     let commandFlags = {}
     commandFlags[m.sender] = { 
       isOwner: true, 
-      customPath: ownerPath 
+      customPath: ownerPath // Forzamos la carpeta de tu captura
     }
 
     try {
-      const phone = m.sender.split('@')[0]
-      
-      // Ejecutamos la vinculación forzando el guardado en /Owner
+      // 3. VINCULACIÓN
       await startSubBot(m, client, rtx, true, phone, m.chat, commandFlags, true)
 
-      // Marcamos el código como usado para que no se repita
+      // Marcar código como usado
       global.db.data.mainTokens[tokenIndex].status = 'used'
       global.db.data.mainTokens[tokenIndex].usedBy = m.sender
-      
-      // Agregamos al usuario a la lista de owners global para permisos totales
-      if (global.owner && !global.owner.some(o => o[0] === phone)) {
-        global.owner.push([phone, 'Owner Premium', true])
-      }
 
     } catch (e) {
       console.error(e)
-      m.reply('⚠︎ Hubo un error al intentar crear la sesión en la carpeta Owner.')
+      m.reply('⚠︎ Error al vincular en la carpeta Owner.')
     }
   }
 }
