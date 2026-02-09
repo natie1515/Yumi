@@ -8,46 +8,70 @@ export default {
     const monedas = botSettings.currency || 'Yenes'
 
     try {
-      // 1. EXTRAER ABSOLUTAMENTE TODO DE LA DB GLOBAL
-      const users = Object.entries(db.users || {})
-        .map(([key, data]) => {
-          const total = (data.coins || 0) + (data.bank || 0)
-          return { jid: key, name: data.name || 'Usuario', total }
+      let globalUsers = {}
+
+      // 1. ESCANEAR TODOS LOS CHATS PARA SUMAR MONEDAS GLOBALES
+      Object.keys(db.chats || {}).forEach(chatId => {
+        const usersInChat = db.chats[chatId].users || {}
+        Object.entries(usersInChat).forEach(([jid, data]) => {
+          if (!globalUsers[jid]) {
+            globalUsers[jid] = { 
+              jid, 
+              name: db.users[jid]?.name || 'Usuario', 
+              total: 0 
+            }
+          }
+          // Sumamos lo que tiene en este chat (coins) + lo que tenga en el banco global
+          globalUsers[jid].total += (data.coins || 0)
         })
-        .filter(u => u.total > 0) // <--- Bajado a 0 para que no diga que no hay datos
+      })
+
+      // 2. SUMAR EL BANCO GLOBAL (Si es que usas banco en db.users)
+      Object.entries(db.users || {}).forEach(([jid, data]) => {
+        if (globalUsers[jid]) {
+          globalUsers[jid].total += (data.bank || 0)
+        } else if ((data.bank || 0) > 0) {
+          globalUsers[jid] = { jid, name: data.name || 'Usuario', total: data.bank }
+        }
+      })
+
+      // Convertir a array y ordenar
+      const ranking = Object.values(globalUsers)
+        .filter(u => u.total > 0)
         .sort((a, b) => b.total - a.total)
 
-      if (users.length === 0) return m.reply(`ꕥ La base de datos global está vacía o nadie tiene dinero aún.`)
+      if (ranking.length === 0) return m.reply(`ꕥ No hay datos de monedas en ningún grupo.`)
 
-      // 2. PREMIOS SEMANALES
+      // 3. PREMIOS SEMANALES
       const now = new Date()
       const weekId = `${now.getFullYear()}-W${getWeekNumber(now)}`
       if (!db.lastWeeklyReward) db.lastWeeklyReward = {}
       
       if (db.lastWeeklyReward.week !== weekId) {
-        const winners = users.slice(0, 3)
+        const winners = ranking.slice(0, 3)
         let congrats = `🎊 *¡PREMIOS SEMANALES DEL TOP GLOBAL!* 🎊\n\n`
         winners.forEach((u, i) => {
           const prize = i === 0 ? 100000 : i === 1 ? 50000 : 25000
-          if (db.users[u.jid]) db.users[u.jid].bank += prize
+          // Los premios se dan en el banco global para que no se pierdan
+          if (!db.users[u.jid]) db.users[u.jid] = {}
+          db.users[u.jid].bank = (db.users[u.jid].bank || 0) + prize
           congrats += `${i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉'} *${u.name}* › *+${prize.toLocaleString()}* ${monedas}\n`
         })
         db.lastWeeklyReward.week = weekId
         await client.sendMessage(m.chat, { text: congrats, mentions: winners.map(w => w.jid) })
       }
 
-      // 3. TOP 20 GLOBAL
+      // 4. MOSTRAR TOP 20
       const page = parseInt(args[0]) || 1
       const pageSize = 20 
-      const totalPages = Math.ceil(users.length / pageSize)
-
+      const totalPages = Math.ceil(ranking.length / pageSize)
       if (page > totalPages) return m.reply(`《✧》 Solo hay *${totalPages}* páginas.`)
 
       const start = (page - 1) * pageSize
-      const pageUsers = users.slice(start, start + pageSize)
+      const pageUsers = ranking.slice(start, start + pageSize)
 
       let text = `🌍 *TOP 20 RIQUEZA GLOBAL* 🌍\n`
-      text += `> Sumando todos los grupos del sistema\n\n`
+      text += `> Suma total de todos los grupos registrados\n\n`
 
       text += pageUsers.map(({ jid, name, total }, i) => {
         const pos = start + i + 1
@@ -57,9 +81,6 @@ export default {
 
       text += `\n\n> 📊 Página *${page}* de *${totalPages}*`
       
-      if (page < totalPages)
-        text += `\n> Ver más › *${usedPrefix + command} ${page + 1}*`
-
       await client.sendMessage(m.chat, { text, mentions: pageUsers.map(u => u.jid) }, { quoted: m })
 
     } catch (e) {
