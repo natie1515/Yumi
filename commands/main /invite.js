@@ -23,15 +23,15 @@ export default {
     const nextTime = user.jointime + cooldown;    
     if (new Date() - user.jointime < cooldown) {
       return m.reply(`ꕥ Espera *${msToTime(nextTime - new Date())}* para volver a enviar otra invitacion.`);
-    }    
+    }
+    if (!args || !args.length) {
+      return m.reply('《✧》 Ingresa el enlace para invitar al bot a tu grupo.');
+    }
     const link = args.join(' ');
     const match = link.match(linkRegex);    
     if (!match || !match[1]) {
       return m.reply('《✧》 El enlace ingresado no es válido o está incompleto.');
-    }    
-    if (!args || !args.length) {
-      return m.reply('《✧》 Ingresa el enlace para invitar al bot a tu grupo.');
-    }    
+    }
     const isOficialBot = botId === global.client.user.id.split(':')[0] + '@s.whatsapp.net';
     const botType = isOficialBot ? 'Principal/Owner' : 'Sub Bot';
     const pp = await client.profilePictureUrl(m.sender, 'image').catch(() => 'https://cdn.yuki-wabot.my.id/files/nufq.jpeg');    
