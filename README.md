@@ -146,7 +146,7 @@ cd && cd YukiBot-MD && rm -rf Sessions/Owner && npm start
 ### Patrocinadores del Proyecto
 
 <details>
-<summary><strong>☁️ Stellar</strong> — API</summary>
+<summary><strong>☁️ Night</strong> — API</summary>
 
 <div align="center">
   <a href="https://api.nightlight.qzz.io">
