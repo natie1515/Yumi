@@ -8,67 +8,36 @@ export default {
     const monedas = botSettings.currency || 'Yenes'
 
     try {
-      let globalUsers = {}
+      // 1. EXTRAER TODOS LOS USUARIOS DEL MÓDULO GLOBAL (db.users)
+      // Aquí es donde se guarda el dinero real de todo el bot
+      const users = Object.entries(db.users || {}).map(([key, data]) => {
+        const total = (data.coins || 0) + (data.bank || 0)
+        const name = data.name || 'Usuario'
+        return { jid: key, name, total }
+      }).filter(u => u.total > 0) // Que sume todo, sin importar si es poco o millones
 
-      // 1. ESCANEO DE LA TABLA DE USUARIOS (Donde se guarda el banco y XP global)
-      Object.entries(db.users || {}).forEach(([jid, data]) => {
-        if (!globalUsers[jid]) {
-          globalUsers[jid] = { 
-            jid, 
-            name: data.name || jid.split('@')[0], 
-            total: 0 
-          }
-        }
-        // Sumamos lo que tenga en el banco y si tiene monedas globales
-        globalUsers[jid].total += (data.bank || 0) + (data.coins || 0)
-      })
+      if (users.length === 0) return m.reply(`ꕥ No hay usuarios registrados en la base de datos global.`)
 
-      // 2. ESCANEO AGRESIVO DE CHATS (Para sumar monedas locales de CADA grupo)
-      // Esto asegura que si alguien tiene 10 millones en un grupo oculto, se sumen.
-      if (db.chats) {
-        Object.values(db.chats).forEach(chatData => {
-          if (chatData.users) {
-            Object.entries(chatData.users).forEach(([jid, userData]) => {
-              if (userData.coins) {
-                if (!globalUsers[jid]) {
-                  globalUsers[jid] = { 
-                    jid, 
-                    name: db.users[jid]?.name || userData.name || jid.split('@')[0], 
-                    total: 0 
-                  }
-                }
-                globalUsers[jid].total += userData.coins
-              }
-            })
-          }
-        })
-      }
-
-      // Convertir a lista y ordenar de mayor a menor (incluyendo a los de millones)
-      const ranking = Object.values(globalUsers)
-        .filter(u => u.total > 0) 
-        .sort((a, b) => b.total - a.total)
-
-      if (ranking.length === 0) return m.reply(`ꕥ No se encontraron datos de riqueza en ninguna tabla.`)
+      // 2. ORDENAR POR RIQUEZA (De mayor a menor)
+      const sorted = users.sort((a, b) => b.total - a.total)
 
       // 3. PAGINACIÓN DE 5 EN 5 (Como pediste)
       const page = parseInt(args[0]) || 1
-      const pageSize = 5 
-      const totalPages = Math.ceil(ranking.length / pageSize)
+      const pageSize = 5
+      const totalPages = Math.ceil(sorted.length / pageSize)
 
-      if (page > totalPages || page < 1) {
-        return m.reply(`《✧》 La página *${page}* no existe. Total: *${totalPages}* páginas.`)
+      if (isNaN(page) || page < 1 || page > totalPages) {
+        return m.reply(`《✧》 La página *${page}* no existe. Hay *${totalPages}* páginas.`)
       }
 
       const start = (page - 1) * pageSize
-      const pageUsers = ranking.slice(start, start + pageSize)
+      const end = start + pageSize
 
-      // 4. DISEÑO ESTÉTICO (✩, ›, (✿◡‿◡))
+      // 4. DISEÑO EXACTO A TU CÓDIGO (✩, ›, (✿◡‿◡))
       let text = `*✩ GlobalTop (✿◡‿◡)*\n\n`
-
-      text += pageUsers.map(({ name, total }, i) => {
-        return `✩ ${start + i + 1} › *${name}*\n     Total → *¥${total.toLocaleString()} ${monedas}*`
-      }).join('\n')
+      text += sorted.slice(start, end).map(({ name, total }, i) => {
+          return `✩ ${start + i + 1} › *${name}*\n     Total → *¥${total.toLocaleString()} ${monedas}*`
+        }).join('\n')
 
       text += `\n\n> ⌦ Página *${page}* de *${totalPages}*`
       
@@ -76,14 +45,11 @@ export default {
         text += `\n> Para ver la siguiente página › *${usedPrefix + command} ${page + 1}*`
       }
 
-      await client.sendMessage(m.chat, { 
-        text, 
-        mentions: pageUsers.map(u => u.jid) 
-      }, { quoted: m })
+      // Enviamos con menciones para que se vea el nombre real
+      await client.sendMessage(m.chat, { text, mentions: sorted.slice(start, end).map(u => u.jid) }, { quoted: m })
 
     } catch (e) {
-      console.error(e)
-      await m.reply(`> Error al procesar la suma global.\n> [Error: *${e.message}*]`)
+      await m.reply(`> An unexpected error occurred while executing command *${usedPrefix + command}*.\n> [Error: *${e.message}*]`)
     }
   }
 }
