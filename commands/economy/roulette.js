@@ -14,7 +14,7 @@ export default {
     const user = chatData.users[m.sender]
     const currency = botSettings.currency || 'Monedas'
 
-    if (args.length < 2) return m.reply(`《✧》 Uso: *rt [cantidad] [color]*`)
+    if (args.length < 2) return m.reply(`《✧》 Uso: *${usedPrefix}rt [cantidad] [color]*`)
 
     let amount, color
     if (!isNaN(parseInt(args[0]))) {
@@ -24,42 +24,46 @@ export default {
     }
 
     const validColors = ['red', 'black', 'green']
-    if (isNaN(amount) || amount < 200) return m.reply(`《✧》 Mínimo 200 ${currency}.`)
+    // Rango de apuesta nerfeado entre 500 y 1000
+    if (isNaN(amount) || amount < 500 || amount > 1000) {
+        return m.reply(`《✧》 La apuesta debe estar entre *500 y 1,000* ${currency}.`)
+    }
+    
     if (!validColors.includes(color)) return m.reply(`《✧》 Elige: red, black o green.`)
-    if (user.coins < amount) return m.reply(`《✧》 No tienes suficientes ${currency}.`)
+    if (user.coins < amount) return m.reply(`《✧》 No tienes suficientes ${currency} para apostar.`)
 
-    // --- LÓGICA DE PROBABILIDAD REALISTA PERO DIFÍCIL ---
+    // --- PROBABILIDAD NERFEADA (Solo 5% de ganar) ---
     const suerte = Math.random() * 100
     let resultColor
 
-    if (suerte < 10) { 
-      // 10% de probabilidad de ganar (Precio Justo)
+    if (suerte < 5) { 
       resultColor = color 
     } else {
-      // 90% de probabilidad de perder, pero variando el color de caída
-      // Para que no parezca que siempre cae en el mismo color
       const coloresParaPerder = validColors.filter(c => c !== color)
       resultColor = coloresParaPerder[Math.floor(Math.random() * coloresParaPerder.length)]
     }
-    // ----------------------------------------------------
 
     if (resultColor === color) {
-      // PAGOS REDUCIDOS (Justos para la economía)
-      // Rojo/Negro pagan x1.5 (Ganas la mitad de lo que apostaste extra)
-      // Verde paga x5 (Ya no x14)
-      const multiplier = resultColor === 'green' ? 5 : 1.5
+      // PAGOS MISERABLES: Solo ganas el 10% de lo apostado (x1.1)
+      const multiplier = resultColor === 'green' ? 2 : 1.1
       const reward = Math.floor(amount * multiplier)
       const gananciaNeta = reward - amount
       
       user.coins += gananciaNeta
       await client.sendMessage(chatId, { 
-        text: `「✿」 La ruleta giró y cayó en... *${resultColor.toUpperCase()}*! 🎰\n\n» ¡Ganaste un premio justo!\n» Recibes: *+${gananciaNeta.toLocaleString()} ${currency}*\n» Total: *${user.coins.toLocaleString()}*`, 
+        text: `「✿」 Cayó en... *${resultColor.toUpperCase()}*! 🎰\n\n» Ganaste por pura suerte.\n» Recibes: *+${gananciaNeta.toLocaleString()} ${currency}*\n» Total: *${user.coins.toLocaleString()}*`, 
         mentions: [senderId] 
       }, { quoted: m })
     } else {
-      user.coins -= amount
+      // PENALIZACIÓN EXTREMA: Pierde lo apostado Y se le multa con x6 de la apuesta
+      const penalty = amount * 6
+      user.coins -= penalty
+
+      // Evitar que el balance sea menor a 0 si prefieres
+      if (user.coins < 0) user.coins = 0
+
       await client.sendMessage(chatId, { 
-        text: `「✿」 La ruleta cayó en *${resultColor.toUpperCase()}*. Perdiste *${amount.toLocaleString()}* ${currency}. 💀\n\nNo te rindas, ¡vuelve a girar!`, 
+        text: `「✿」 ¡LA RULETA TE ESTAFÓ! 💀\n\n» Cayó en: *${resultColor.toUpperCase()}*\n» Perdiste tu apuesta y el banco te multó con x6.\n» Total perdido: *-${penalty.toLocaleString()} ${currency}*\n» Tu saldo quedó en: *${user.coins.toLocaleString()}*`, 
         mentions: [senderId] 
       }, { quoted: m })
     }
