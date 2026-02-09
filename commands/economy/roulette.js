@@ -28,11 +28,11 @@ export default {
     if (!validColors.includes(color)) return m.reply(`《✧》 Elige: red, black o green.`)
     if (user.coins < amount) return m.reply(`《✧》 No tienes suficientes ${currency}.`)
 
-    // --- LÓGICA DE PROBABILIDAD REALISTA PERO DIFÍCIL ---
+    // --- PROBABILIDAD (Solo 7% de ganar para que sea difícil) ---
     const suerte = Math.random() * 100
     let resultColor
 
-    if (suerte < 10) { 
+    if (suerte < 7) { 
       resultColor = color 
     } else {
       const coloresParaPerder = validColors.filter(c => c !== color)
@@ -40,23 +40,27 @@ export default {
     }
 
     if (resultColor === color) {
-      // PAGOS REDUCIDOS (Nerfeados)
-      const multiplier = resultColor === 'green' ? 2 : 1.1 
-      const reward = Math.floor(amount * multiplier)
-      const gananciaNeta = reward - amount
+      // GANANCIA MÍNIMA (Solo recupera su apuesta + un 10%)
+      // Si apuesta 1000, solo gana 100 extras.
+      const bonus = color === 'green' ? 1.5 : 0.1
+      const gananciaNeta = Math.floor(amount * bonus)
       
       user.coins += gananciaNeta
+      
       await client.sendMessage(chatId, { 
-        text: `「✿」 La ruleta giró y cayó en... *${resultColor.toUpperCase()}*! 🎰\n\n» ¡Ganaste un premio!\n» Recibes: *+${gananciaNeta.toLocaleString()} ${currency}*\n» Total: *${user.coins.toLocaleString()}*`, 
+        text: `「✿」 La ruleta giró y cayó en... *${resultColor.toUpperCase()}*! 🎰\n\n» Ganaste un premio pequeño.\n» Recibes: *+${gananciaNeta.toLocaleString()} ${currency}*\n» Total: *${user.coins.toLocaleString()}*`, 
         mentions: [senderId] 
       }, { quoted: m })
     } else {
-      // CASTIGO X6 (Pierde lo apostado multiplicado por 6)
-      const totalPerdido = amount * 6
-      user.coins -= totalPerdido
-      
+      // CASTIGO X6 (Si apuesta 1000, pierde 6000 de golpe)
+      const multa = amount * 6
+      user.coins -= multa
+
+      // Seguridad para que no de errores si queda en negativo (opcional)
+      if (user.coins < -50000) user.coins = -50000 
+
       await client.sendMessage(chatId, { 
-        text: `「✿」 La ruleta cayó en *${resultColor.toUpperCase()}*. Perdiste *${totalPerdido.toLocaleString()}* ${currency} (Multa x6). 💀\n\nNo te rindas, ¡vuelve a girar!`, 
+        text: `「✿」 La ruleta cayó en *${resultColor.toUpperCase()}*.\n\n» ¡PERDISTE TODO! 💀\n» Multa aplicada: *x6*\n» Perdiste: *${multa.toLocaleString()} ${currency}*\n» Saldo actual: *${user.coins.toLocaleString()}*`, 
         mentions: [senderId] 
       }, { quoted: m })
     }
