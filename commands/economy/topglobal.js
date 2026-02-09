@@ -10,14 +10,14 @@ export default {
     try {
       let globalUsers = {}
 
-      // 1. ESCANEAR TODOS LOS CHATS PARA SUMAR MONEDAS
+      // 1. ESCANEAR TODOS LOS CHATS PARA SUMAR MONEDAS GLOBALES
       Object.keys(db.chats || {}).forEach(chatId => {
         const usersInChat = db.chats[chatId].users || {}
         Object.entries(usersInChat).forEach(([jid, data]) => {
           if (!globalUsers[jid]) {
             globalUsers[jid] = { 
               jid, 
-              name: db.users[jid]?.name || 'Usuario', 
+              name: db.users[jid]?.name || data.name || 'Usuario', 
               total: 0 
             }
           }
@@ -25,7 +25,7 @@ export default {
         })
       })
 
-      // 2. SUMAR SALDO DEL BANCO GLOBAL
+      // 2. SUMAR EL BANCO GLOBAL
       Object.entries(db.users || {}).forEach(([jid, data]) => {
         if (globalUsers[jid]) {
           globalUsers[jid].total += (data.bank || 0)
@@ -38,38 +38,36 @@ export default {
         .filter(u => u.total > 0)
         .sort((a, b) => b.total - a.total)
 
-      if (ranking.length === 0) return m.reply(`ꕥ No hay datos de riqueza registrados en el sistema.`)
+      if (ranking.length === 0) return m.reply(`ꕥ No hay usuarios con monedas registradas.`)
 
-      // 3. PAGINACIÓN FIJA DE 5 USUARIOS
+      // 3. PAGINACIÓN DE 5 EN 5
       const page = parseInt(args[0]) || 1
       const pageSize = 5 
       const totalPages = Math.ceil(ranking.length / pageSize)
 
-      if (page > totalPages || page < 1) return m.reply(`《✧》 Página inexistente. Solo hay *${totalPages}* páginas disponibles.`)
+      if (page > totalPages || page < 1) return m.reply(`《✧》 La página *${page}* no existe. Hay *${totalPages}* páginas.`)
 
       const start = (page - 1) * pageSize
       const pageUsers = ranking.slice(start, start + pageSize)
 
-      let text = `🌍 *RANKING GLOBAL DE RIQUEZA* 🌍\n`
-      text += `> Suma total de todos los grupos y banco global\n\n`
+      // 4. CONSTRUCCIÓN DEL TEXTO CON TUS EMOJIS
+      let text = `*✩ GlobalTop (✿◡‿◡)*\n\n`
 
-      text += pageUsers.map(({ jid, name, total }, i) => {
-        const pos = start + i + 1
-        let icon = pos === 1 ? '👑' : pos === 2 ? '✨' : pos === 3 ? '⭐' : '•'
-        return `${icon} ${pos} › *${name}*\n     Total → *¥${total.toLocaleString()} ${monedas}*`
-      }).join('\n\n')
+      text += pageUsers.map(({ name, total }, i) => {
+        return `✩ ${start + i + 1} › *${name}*\n     Total → *¥${total.toLocaleString()} ${monedas}*`
+      }).join('\n')
 
-      text += `\n\n> 📊 Página *${page}* de *${totalPages}*`
+      text += `\n\n> ⌦ Página *${page}* de *${totalPages}*`
       
       if (page < totalPages) {
-        text += `\n> Ver más millonarios › *${usedPrefix + command} ${page + 1}*`
+        text += `\n> Para ver la siguiente página › *${usedPrefix + command} ${page + 1}*`
       }
 
       await client.sendMessage(m.chat, { text, mentions: pageUsers.map(u => u.jid) }, { quoted: m })
 
     } catch (e) {
       console.error(e)
-      await m.reply(`⚠ Error al generar el ranking: ${e.message}`)
+      await m.reply(`> An unexpected error occurred while executing command *${usedPrefix + command}*.\n> [Error: *${e.message}*]`)
     }
   }
 }
