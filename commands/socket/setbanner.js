@@ -31,33 +31,30 @@ export default {
     if (!buffer) return m.reply('✎ No se pudo descargar la imagen.')
 
     try {
-      // Usando un servidor de carga directo y más compatible
-      const url = await uploadToImgBB(buffer)
+      // Subida a Catbox con corrección de extensión para evitar pantalla negra
+      const url = await uploadToCatbox(buffer, mime)
       if (!url) throw new Error("Error al obtener URL")
       
       config.banner = url
       return m.reply(`✿ Se ha actualizado el banner de *${config.namebot}*!`)
     } catch (e) {
       console.error(e)
-      // Si falla ImgBB, intentamos un respaldo rápido
-      return m.reply('✎ Hubo un error al subir el archivo. Intenta de nuevo.')
+      return m.reply('✎ Hubo un error al subir el archivo a Catbox. Intenta de nuevo.')
     }
   },
 };
 
-async function uploadToImgBB(buffer) {
+async function uploadToCatbox(buffer, mime) {
+  const ext = mime.split('/')[1] || 'png'
   const body = new FormData()
-  // Usando una clave de API más estable para el proceso
-  body.append('image', buffer.toString('base64'))
+  body.append('reqtype', 'fileupload')
+  body.append('fileToUpload', buffer, { filename: `file.${ext}`, contentType: mime })
   
-  const res = await fetch('https://api.imgbb.com/1/upload?key=699965152843477312781448b476e33d', { 
+  const res = await fetch('https://catbox.moe/user/api.php', { 
     method: 'POST', 
     body 
   })
   
-  const json = await res.json()
-  if (json.data && json.data.url) {
-    return json.data.url
-  }
-  return null
+  if (!res.ok) return null
+  return await res.text() 
 }
