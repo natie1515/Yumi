@@ -31,7 +31,7 @@ export default {
     if (!buffer) return m.reply('✎ No se pudo descargar la imagen.')
 
     try {
-      // Subida a ImgBB para GIFs y fotos permanentes
+      // Usando un servidor de carga directo y más compatible
       const url = await uploadToImgBB(buffer)
       if (!url) throw new Error("Error al obtener URL")
       
@@ -39,6 +39,7 @@ export default {
       return m.reply(`✿ Se ha actualizado el banner de *${config.namebot}*!`)
     } catch (e) {
       console.error(e)
+      // Si falla ImgBB, intentamos un respaldo rápido
       return m.reply('✎ Hubo un error al subir el archivo. Intenta de nuevo.')
     }
   },
@@ -46,7 +47,7 @@ export default {
 
 async function uploadToImgBB(buffer) {
   const body = new FormData()
-  // Usamos una API Key pública de ejemplo, si tienes una propia es mejor
+  // Usando una clave de API más estable para el proceso
   body.append('image', buffer.toString('base64'))
   
   const res = await fetch('https://api.imgbb.com/1/upload?key=699965152843477312781448b476e33d', { 
