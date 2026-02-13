@@ -21,7 +21,7 @@ export default {
           const credsPath = path.join(subsPath, dir, 'creds.json')
           return fs.existsSync(credsPath)
         }).length : 0
-    const maxSubs = 61
+    const maxSubs = 68
     if (subsCount >= maxSubs) {
       return client.reply(m.chat, '✐ No se han encontrado espacios disponibles para registrar un `Sub-Bot`.', m)
     }
