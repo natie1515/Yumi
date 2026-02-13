@@ -24,7 +24,6 @@ export default {
     if (!q) return m.reply('✎ Responde a una imagen válida.')
 
     const mime = (q.msg || q).mimetype || q.mediaType || ''
-    // Validamos imágenes, GIFs y videos mp4
     if (!/image\/(png|jpe?g|gif)|video\/mp4/.test(mime))
       return m.reply('✎ Responde a una imagen válida.')
 
@@ -32,8 +31,8 @@ export default {
     if (!buffer) return m.reply('✎ No se pudo descargar la imagen.')
 
     try {
-      // Subida compatible con GIF y Permanente
-      const url = await uploadMedia(buffer)
+      // Subida a ImgBB para GIFs y fotos permanentes
+      const url = await uploadToImgBB(buffer)
       if (!url) throw new Error("Error al obtener URL")
       
       config.banner = url
@@ -45,19 +44,19 @@ export default {
   },
 };
 
-async function uploadMedia(buffer) {
+async function uploadToImgBB(buffer) {
   const body = new FormData()
-  // Usamos un nombre de archivo genérico pero con extensión para que el servidor lo reconozca
-  body.append('file', buffer, { filename: 'banner.gif' })
+  // Usamos una API Key pública de ejemplo, si tienes una propia es mejor
+  body.append('image', buffer.toString('base64'))
   
-  const res = await fetch('https://telegra.ph/upload', { 
+  const res = await fetch('https://api.imgbb.com/1/upload?key=699965152843477312781448b476e33d', { 
     method: 'POST', 
     body 
   })
   
   const json = await res.json()
-  if (json[0] && json[0].src) {
-    return 'https://telegra.ph' + json[0].src
+  if (json.data && json.data.url) {
+    return json.data.url
   }
   return null
 }
